@@ -164,28 +164,44 @@ class RecipeAPITester:
 
     def test_create_recipe(self):
         """Test creating a recipe"""
-        recipe_data = {
+        # Use requests directly for form data
+        url = f"{self.base_url}/recettes"
+        headers = {'Authorization': f'Bearer {self.token}'}
+        
+        form_data = {
             "titre": "Salade de Tomates Basilic",
             "ingredients": "tomates, basilic frais, mozzarella, huile d'olive, vinaigre balsamique",
             "instructions": "1. Couper les tomates en tranches\n2. Ajouter la mozzarella\n3. Garnir de basilic\n4. Assaisonner",
             "categorie": "Entrée"
         }
         
-        success, response = self.run_test(
-            "Create Recipe",
-            "POST",
-            "recettes",
-            200,
-            data=recipe_data,
-            files={},  # Simulate form data
-            headers={'Authorization': f'Bearer {self.token}'}
-        )
+        self.tests_run += 1
+        print(f"\n🔍 Testing Create Recipe...")
+        print(f"   URL: {url}")
         
-        if success and 'recette' in response:
-            self.created_recipe_id = response['recette']['id']
-            print(f"   Recipe ID: {self.created_recipe_id}")
-            return True
-        return False
+        try:
+            response = requests.post(url, data=form_data, headers=headers)
+            
+            success = response.status_code == 200
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                response_data = response.json()
+                if 'recette' in response_data:
+                    self.created_recipe_id = response_data['recette']['id']
+                    print(f"   Recipe ID: {self.created_recipe_id}")
+                    return True
+            else:
+                print(f"❌ Failed - Expected 200, got {response.status_code}")
+                try:
+                    error_detail = response.json()
+                    print(f"   Error: {error_detail}")
+                except:
+                    print(f"   Error: {response.text}")
+                return False
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False
 
     def test_get_my_recipes(self):
         """Test getting user's recipes"""
