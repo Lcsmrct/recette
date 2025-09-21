@@ -239,62 +239,95 @@ const AjouterRecette = () => {
         {/* AI Suggestion Card */}
         <Card className="glass border-white/20 shadow-warm mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Sparkles className="h-5 w-5 text-purple-500" />
-              <span>Suggestion IA</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="ai-ingredients">Ingrédients disponibles</Label>
-                <Textarea
-                  id="ai-ingredients"
-                  value={aiIngredients}
-                  onChange={(e) => setAiIngredients(e.target.value)}
-                  placeholder="Ex: tomates, basilic, mozzarella, huile d'olive..."
-                  className="mt-2"
-                  rows={3}
-                />
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-5 w-5 text-purple-500" />
+                <span>Assistant IA pour Recettes</span>
               </div>
-              
               <Button
                 type="button"
-                onClick={handleAISuggestion}
-                disabled={loadingAI || !aiIngredients.trim()}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAISuggestion(!showAISuggestion)}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
               >
-                {loadingAI ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                    <span>Génération...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="h-4 w-4" />
-                    <span>Obtenir une suggestion</span>
+                {showAISuggestion ? 'Masquer' : 'Utiliser l\'IA'}
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          {showAISuggestion && (
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                  <p className="text-sm text-purple-800 mb-3">
+                    💡 <strong>Astuce :</strong> Listez les ingrédients que vous avez, et notre IA vous suggérera une délicieuse recette !
+                  </p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="ai-ingredients" className="text-sm font-medium text-gray-700">
+                    Quels ingrédients avez-vous ?
+                  </Label>
+                  <Textarea
+                    id="ai-ingredients"
+                    value={aiIngredients}
+                    onChange={(e) => setAiIngredients(e.target.value)}
+                    placeholder="Ex: tomates, basilic frais, mozzarella, huile d'olive, vinaigre balsamique..."
+                    className="mt-2 border-purple-200 focus:border-purple-500 focus:ring-purple-500"
+                    rows={3}
+                  />
+                </div>
+                
+                <Button
+                  type="button"
+                  onClick={handleAISuggestion}
+                  disabled={loadingAI || !aiIngredients.trim()}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg"
+                >
+                  {loadingAI ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      <span>L'IA réfléchit à votre recette...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="h-4 w-4" />
+                      <span>Créer une recette avec l'IA</span>
+                    </div>
+                  )}
+                </Button>
+
+                {aiSuggestion && (
+                  <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+                    <h4 className="font-semibold text-purple-900 mb-2 flex items-center">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Recette suggérée par l'IA :
+                    </h4>
+                    <div className="text-sm text-purple-800 whitespace-pre-wrap mb-4 bg-white p-3 rounded border border-purple-100">
+                      {aiSuggestion}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button
+                        type="button"
+                        onClick={applyAISuggestion}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        ✨ Utiliser cette recette
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => setAiSuggestion('')}
+                        variant="outline"
+                        className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                      >
+                        Nouvelle suggestion
+                      </Button>
+                    </div>
                   </div>
                 )}
-              </Button>
-
-              {aiSuggestion && (
-                <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <h4 className="font-semibold text-purple-900 mb-2">Suggestion générée :</h4>
-                  <div className="text-sm text-purple-800 whitespace-pre-wrap mb-4">
-                    {aiSuggestion}
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={applyAISuggestion}
-                    variant="outline"
-                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
-                  >
-                    Appliquer cette suggestion
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         {/* Main Form */}
