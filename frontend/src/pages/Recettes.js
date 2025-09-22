@@ -141,42 +141,42 @@ const Recettes = () => {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl shadow-lg">
-              <ChefHat className="h-8 w-8 text-white" />
+            <div className="p-2 sm:p-3 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl shadow-lg">
+              <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
           </div>
-          <h1 className="playfair text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="playfair text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Découvrez nos Recettes
           </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base px-4 sm:px-0">
             Explorez notre collection de recettes authentiques, 
             toutes vérifiées et approuvées par notre communauté.
           </p>
         </div>
 
         {/* Search and Filters */}
-        <Card className="glass border-white/20 shadow-warm mb-8">
-          <CardContent className="p-6">
+        <Card className="glass border-white/20 shadow-warm mb-6 sm:mb-8">
+          <CardContent className="p-4 sm:p-6">
             {/* Search Bar */}
-            <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <div className="relative mb-4 sm:mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <Input
                 type="text"
                 value={searchTerm}
                 onChange={handleSearch}
-                className="pl-10 h-12 border-gray-200 focus:border-red-500 focus:ring-red-500"
+                className="pl-9 sm:pl-10 h-10 sm:h-12 border-gray-200 focus:border-red-500 focus:ring-red-500 text-sm sm:text-base"
                 placeholder="Rechercher une recette, un ingrédient..."
               />
             </div>
 
             {/* Category Filters */}
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+            <div className="mb-4 sm:mb-6">
+              <h3 className="font-medium text-gray-900 mb-3 flex items-center text-sm sm:text-base">
                 <Filter className="h-4 w-4 mr-2" />
                 Catégories
               </h3>
@@ -185,7 +185,7 @@ const Recettes = () => {
                   <Badge
                     key={category}
                     variant={selectedCategory === category ? "default" : "outline"}
-                    className={`cursor-pointer transition-all hover:shadow-md ${
+                    className={`cursor-pointer transition-all hover:shadow-md text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-1 ${
                       selectedCategory === category 
                         ? 'bg-red-500 text-white border-red-500' 
                         : getCategoryColor(category)
@@ -199,34 +199,34 @@ const Recettes = () => {
             </div>
 
             {/* Sort Options */}
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <span className="font-medium text-gray-900 text-sm">Trier par :</span>
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant={sortBy === 'recent' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleSort('recent')}
-                  className={sortBy === 'recent' ? 'bg-red-500 text-white' : 'border-gray-300 text-gray-700'}
+                  className={`text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2 ${sortBy === 'recent' ? 'bg-red-500 text-white' : 'border-gray-300 text-gray-700'}`}
                 >
-                  <Clock className="h-4 w-4 mr-1" />
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Plus récentes
                 </Button>
                 <Button
                   variant={sortBy === 'rating' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleSort('rating')}
-                  className={sortBy === 'rating' ? 'bg-red-500 text-white' : 'border-gray-300 text-gray-700'}
+                  className={`text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2 ${sortBy === 'rating' ? 'bg-red-500 text-white' : 'border-gray-300 text-gray-700'}`}
                 >
-                  <Star className="h-4 w-4 mr-1" />
+                  <Star className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Mieux notées
                 </Button>
                 <Button
                   variant={sortBy === 'popular' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleSort('popular')}
-                  className={sortBy === 'popular' ? 'bg-red-500 text-white' : 'border-gray-300 text-gray-700'}
+                  className={`text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2 ${sortBy === 'popular' ? 'bg-red-500 text-white' : 'border-gray-300 text-gray-700'}`}
                 >
-                  <Users className="h-4 w-4 mr-1" />
+                  <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Plus populaires
                 </Button>
               </div>
@@ -235,8 +235,8 @@ const Recettes = () => {
         </Card>
 
         {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
+        <div className="mb-4 sm:mb-6 px-2 sm:px-0">
+          <p className="text-gray-600 text-sm sm:text-base">
             {recettes.length} recette{recettes.length !== 1 ? 's' : ''} trouvée{recettes.length !== 1 ? 's' : ''}
             {selectedCategory && ` dans la catégorie "${selectedCategory}"`}
             {searchTerm && ` pour "${searchTerm}"`}
@@ -246,14 +246,14 @@ const Recettes = () => {
         {/* Recettes Grid */}
         {recettes.length === 0 ? (
           <Card className="glass border-white/20 shadow-warm">
-            <CardContent className="p-12 text-center">
-              <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-6">
-                <Search className="h-12 w-12 text-gray-400" />
+            <CardContent className="p-8 sm:p-12 text-center">
+              <div className="p-3 sm:p-4 bg-gray-100 rounded-full w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6">
+                <Search className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">
                 Aucune recette trouvée
               </h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              <p className="text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
                 {searchTerm || selectedCategory 
                   ? 'Essayez de modifier vos critères de recherche ou de supprimer les filtres.'
                   : 'Il n\'y a pas encore de recettes publiées. Soyez le premier à partager la vôtre !'
@@ -274,7 +274,7 @@ const Recettes = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {recettes.map((recette) => (
               <RecetteCard 
                 key={recette.id} 
@@ -300,7 +300,7 @@ const Recettes = () => {
 
         {/* Load More Button (if needed for pagination) */}
         {recettes.length > 0 && recettes.length % 12 === 0 && (
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 sm:mt-12">
             <Button
               variant="outline"
               size="lg"
