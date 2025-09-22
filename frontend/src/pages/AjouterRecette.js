@@ -100,29 +100,30 @@ const AjouterRecette = () => {
 
     setLoadingAI(true);
     try {
-      // Use the structured recipe generation endpoint
-      const response = await axios.post('/ia/generer-recette', {
-        ingredients: aiIngredients
-      });
-      
-      // Check if we got structured data
-      if (response.data.recette) {
-        const recette = response.data.recette;
-        setAiSuggestion(JSON.stringify(recette, null, 2)); // Store as formatted JSON for display
-        
-        // Auto-apply the structured data
-        setFormData({
-          ...formData,
-          titre: recette.titre || formData.titre,
-          ingredients: recette.ingredients || formData.ingredients,
-          instructions: recette.instructions || formData.instructions,
-          categorie: recette.categorie || formData.categorie
+      if (aiMode === 'generate') {
+        // Use the structured recipe generation endpoint
+        const response = await axios.post('/ia/generer-recette', {
+          ingredients: aiIngredients
         });
         
-        toast.success('Recette générée et appliquée avec succès ! 🎉');
-        setShowAISuggestion(false); // Close the AI section since we auto-applied
+        // Check if we got structured data
+        if (response.data.recette) {
+          const recette = response.data.recette;
+          
+          // Store as formatted display
+          setAiSuggestion(`🎯 **${recette.titre}**\n\n🍯 **Ingrédients:**\n${recette.ingredients}\n\n👨‍🍳 **Instructions:**\n${recette.instructions}\n\n🏷️ **Catégorie:** ${recette.categorie}`);
+          
+          toast.success('Recette complète générée ! 🎉');
+        } else {
+          setAiSuggestion(response.data.suggestion);
+          toast.success('Suggestion générée avec succès !');
+        }
       } else {
-        // Fallback to old method
+        // Use simple suggestions endpoint
+        const response = await axios.post('/ia/suggestions', {
+          ingredients: aiIngredients
+        });
+        
         setAiSuggestion(response.data.suggestion);
         toast.success('Suggestion générée avec succès !');
       }
