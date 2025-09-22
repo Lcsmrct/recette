@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from './ui/button';
 import { 
@@ -9,7 +9,9 @@ import {
   LayoutDashboard, 
   Settings, 
   LogOut,
-  User
+  User,
+  Menu,
+  X
 } from 'lucide-react';
 
 const Navigation = ({ user, onLogout }) => {
