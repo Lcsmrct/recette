@@ -313,11 +313,18 @@ class RecipeAPITester:
         """Test complete password reset flow with database token extraction"""
         import pymongo
         from datetime import datetime, timezone
+        import os
+        from dotenv import load_dotenv
         
-        # Connect to MongoDB to extract the reset token
+        # Load environment variables
+        load_dotenv('backend/.env')
+        mongo_url = os.environ['MONGO_URL']
+        db_name = os.environ['DB_NAME']
+        
+        # Connect to MongoDB Atlas to extract the reset token
         try:
-            mongo_client = pymongo.MongoClient("mongodb://localhost:27017")
-            db = mongo_client["recettes_db"]
+            mongo_client = pymongo.MongoClient(mongo_url)
+            db = mongo_client[db_name]
             
             # First, create a user for testing
             timestamp = datetime.now().strftime('%H%M%S')
