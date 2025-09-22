@@ -302,21 +302,26 @@ const AjouterRecette = () => {
                 </Button>
 
                 {aiSuggestion && (
-                  <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
-                    <h4 className="font-semibold text-purple-900 mb-2 flex items-center">
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Recette suggérée par l'IA :
-                    </h4>
-                    <div className="text-sm text-purple-800 whitespace-pre-wrap mb-4 bg-white p-3 rounded border border-purple-100">
-                      {aiSuggestion}
+                  <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 rounded-xl border border-purple-200 shadow-lg">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full">
+                        <Bot className="h-4 w-4 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-purple-900">Recette suggérée par l'IA :</h4>
                     </div>
-                    <div className="flex space-x-2">
+                    
+                    <div className="mb-6">
+                      <AIResponseFormatter response={aiSuggestion} />
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button
                         type="button"
                         onClick={applyAISuggestion}
-                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex-1"
                       >
-                        ✨ Utiliser cette recette
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        Utiliser cette recette
                       </Button>
                       <Button
                         type="button"
