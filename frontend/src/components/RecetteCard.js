@@ -199,7 +199,7 @@ const RecetteCard = ({
         {/* Interactive Rating */}
         {showActions && currentUser && (
           <div className="border-t pt-4">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 space-y-2 sm:space-y-0">
               <span className="text-sm font-medium text-gray-700">Noter cette recette :</span>
               <div className="star-rating flex">
                 {renderStars(0, true)}
