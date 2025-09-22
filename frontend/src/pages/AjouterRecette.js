@@ -40,6 +40,7 @@ const AjouterRecette = () => {
   const [aiIngredients, setAiIngredients] = useState('');
   const [aiSuggestion, setAiSuggestion] = useState('');
   const [loadingAI, setLoadingAI] = useState(false);
+  const [aiMode, setAiMode] = useState('generate'); // 'generate' or 'suggest'
 
   useEffect(() => {
     fetchCategories();
