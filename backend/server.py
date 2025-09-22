@@ -456,45 +456,121 @@ async def get_commentaires(recette_id: str):
 # AI Suggestions
 @api_router.post("/ia/suggestions")
 async def get_suggestions_ia(suggestion_data: SuggestionIA):
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=503, detail="Service IA non disponible")
+    if not GOOGLE_GEMINI_API_KEY:
+        # Fallback to Emergent LLM if Gemini not available
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=503, detail="Service IA non disponible")
+        return await get_suggestions_ia_emergent(suggestion_data)
     
     try:
-        # Initialize LLM Chat with Gemini 2.0 Flash (meilleur modèle gratuit)
+        # Use Google Gemini directly
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        
+        prompt = f"""Vous êtes un chef cuisinier expert qui suggère des recettes créatives et savoureuses basées sur les ingrédients disponibles. 
+
+Suggérez-moi une recette délicieuse avec ces ingrédients : {suggestion_data.ingredients}
+
+Donnez-moi le titre, la liste des ingrédients nécessaires, et les instructions de préparation étape par étape.
+Répondez en français."""
+        
+        response = model.generate_content(prompt)
+        
+        return {"suggestion": response.text}
+    
+    except Exception as e:
+        # Fallback to Emergent LLM on error
+        if EMERGENT_LLM_KEY:
+            return await get_suggestions_ia_emergent(suggestion_data)
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de suggestions: {str(e)}")
+
+async def get_suggestions_ia_emergent(suggestion_data: SuggestionIA):
+    """Fallback function using Emergent LLM"""
+    try:
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"recette-{str(uuid.uuid4())}",
             system_message="Vous êtes un chef cuisinier expert qui suggère des recettes créatives et savoureuses basées sur les ingrédients disponibles. Répondez toujours en français."
         ).with_model("gemini", "gemini-2.0-flash")
         
-        # Create message
         user_message = UserMessage(
             text=f"Suggère-moi une recette délicieuse avec ces ingrédients : {suggestion_data.ingredients}. Donne-moi le titre, la liste des ingrédients nécessaires, et les instructions de préparation étape par étape."
         )
         
-        # Get AI response
         response = await chat.send_message(user_message)
-        
         return {"suggestion": response}
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de suggestions: {str(e)}")
 
 @api_router.post("/ia/generer-recette")
 async def generer_recette_complete(suggestion_data: SuggestionIA):
     """Génère une recette complète avec ingrédients et instructions séparément structurés"""
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=503, detail="Service IA non disponible")
+    if not GOOGLE_GEMINI_API_KEY:
+        # Fallback to Emergent LLM if Gemini not available
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=503, detail="Service IA non disponible")
+        return await generer_recette_complete_emergent(suggestion_data)
     
     try:
-        # Initialize LLM Chat with Gemini 2.0 Flash
+        # Use Google Gemini directly
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        
+        prompt = f"""Vous êtes un chef cuisinier expert. Créez une recette complète avec ces ingrédients : {suggestion_data.ingredients}
+
+Répondez UNIQUEMENT en format JSON avec cette structure exacte :
+{{
+    "titre": "Nom de la recette",
+    "ingredients": "Liste complète des ingrédients avec quantités (séparés par des retours à la ligne)",
+    "instructions": "Instructions de préparation étape par étape (séparées par des retours à la ligne)", 
+    "categorie": "Catégorie parmi: Entrée, Plat principal, Dessert, Boisson, Apéritif, Petit-déjeuner, Goûter, Sauce, Autre"
+}}
+
+Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis. Répondez en français."""
+        
+        response = model.generate_content(prompt)
+        
+        # Try to parse JSON response
+        try:
+            import json
+            # Clean the response to extract JSON
+            cleaned_response = response.text.strip()
+            if cleaned_response.startswith('```json'):
+                cleaned_response = cleaned_response[7:]
+            if cleaned_response.endswith('```'):
+                cleaned_response = cleaned_response[:-3]
+            
+            recette_data = json.loads(cleaned_response)
+            
+            # Validate required fields
+            required_fields = ['titre', 'ingredients', 'instructions', 'categorie']
+            for field in required_fields:
+                if field not in recette_data:
+                    raise ValueError(f"Champ manquant: {field}")
+            
+            return {"recette": recette_data, "raw_response": response.text}
+            
+        except (json.JSONDecodeError, ValueError) as e:
+            # If JSON parsing fails, return raw response
+            return {
+                "recette": None, 
+                "raw_response": response.text, 
+                "error": f"Erreur de parsing JSON: {str(e)}"
+            }
+    
+    except Exception as e:
+        # Fallback to Emergent LLM on error
+        if EMERGENT_LLM_KEY:
+            return await generer_recette_complete_emergent(suggestion_data)
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de recette: {str(e)}")
+
+async def generer_recette_complete_emergent(suggestion_data: SuggestionIA):
+    """Fallback function using Emergent LLM"""
+    try:
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"recette-complete-{str(uuid.uuid4())}",
             system_message="Vous êtes un chef cuisinier expert. Générez des recettes complètes et bien structurées en français. Répondez UNIQUEMENT au format JSON demandé."
         ).with_model("gemini", "gemini-2.0-flash")
         
-        # Create structured message for complete recipe generation
         user_message = UserMessage(
             text=f"""Créez une recette complète avec ces ingrédients : {suggestion_data.ingredients}
 
@@ -509,13 +585,11 @@ Répondez UNIQUEMENT en format JSON avec cette structure exacte :
 Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis."""
         )
         
-        # Get AI response
         response = await chat.send_message(user_message)
         
         # Try to parse JSON response
         try:
             import json
-            # Clean the response to extract JSON
             cleaned_response = response.strip()
             if cleaned_response.startswith('```json'):
                 cleaned_response = cleaned_response[7:]
@@ -524,7 +598,6 @@ Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis."""
             
             recette_data = json.loads(cleaned_response)
             
-            # Validate required fields
             required_fields = ['titre', 'ingredients', 'instructions', 'categorie']
             for field in required_fields:
                 if field not in recette_data:
@@ -533,13 +606,11 @@ Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis."""
             return {"recette": recette_data, "raw_response": response}
             
         except (json.JSONDecodeError, ValueError) as e:
-            # If JSON parsing fails, return raw response
             return {
                 "recette": None, 
                 "raw_response": response, 
                 "error": f"Erreur de parsing JSON: {str(e)}"
             }
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de recette: {str(e)}")
 
