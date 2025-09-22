@@ -10,6 +10,87 @@
   font-family: 'Playfair Display', serif;
 }
 
+/* Mobile First - Base styles for mobile */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Mobile typography */
+  h1 {
+    font-size: 1.875rem !important; /* text-3xl instead of text-4xl */
+    line-height: 2.25rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important; /* text-2xl instead of text-3xl */
+    line-height: 2rem !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important; /* text-xl instead of text-2xl */
+    line-height: 1.75rem !important;
+  }
+  
+  /* Mobile cards */
+  .recipe-card {
+    margin-bottom: 1rem;
+  }
+  
+  /* Mobile touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile form elements */
+  .form-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .form-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Mobile modal */
+  .modal-content {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+    width: calc(100vw - 2rem);
+  }
+  
+  /* Mobile navigation */
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    z-index: 50;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1025px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -35,8 +116,20 @@
 }
 
 .recipe-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile-friendly hover effects */
+@media (hover: none) and (pointer: coarse) {
+  .recipe-card:hover {
+    transform: none;
+  }
+  
+  .recipe-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
 }
 
 /* Glass morphism effects */
@@ -45,6 +138,14 @@
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Mobile glass effect - lighter for better performance */
+@media (max-width: 640px) {
+  .glass {
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.9);
+  }
 }
 
 /* Button animations */
