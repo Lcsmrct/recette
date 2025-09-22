@@ -5,6 +5,8 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import SmartTextArea from '../components/SmartTextArea';
+import AIResponseFormatter from '../components/AIResponseFormatter';
 import { 
   ChefHat, 
   Upload, 
@@ -14,7 +16,9 @@ import {
   Send,
   Clock,
   Users,
-  Star
+  Star,
+  Wand2,
+  Bot
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
