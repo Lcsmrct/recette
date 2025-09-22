@@ -616,7 +616,7 @@ def main():
         ("AI Suggestions", tester.test_ai_suggestions),
         ("AI Generate Complete Recipe", tester.test_ai_generate_recipe),
         ("Forgot Password", tester.test_forgot_password),
-        ("Password Reset Flow", tester.test_password_reset_flow),
+        ("Password Reset Flow", tester.test_complete_password_reset_flow),
         ("Verify Invalid Reset Token", tester.test_verify_invalid_reset_token),
         ("Reset Password Invalid Token", tester.test_reset_password_invalid_token),
         ("Initialize Admin", tester.test_init_admin),
