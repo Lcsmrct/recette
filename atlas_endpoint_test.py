@@ -170,11 +170,7 @@ class AtlasEndpointTester:
         
         if not success:
             return False
-        if not success:
-            return False
             
-        self.test_recipe_id = response.get('recette', {}).get('id')
-        
         # Verify recipe was written to Atlas
         if not await self.verify_database_write("recettes", {"id": self.test_recipe_id}):
             return False
