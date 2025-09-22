@@ -115,48 +115,93 @@ const AjouterRecette = () => {
 
   const applyAISuggestion = () => {
     if (aiSuggestion) {
-      // Try to parse the AI suggestion to extract structured data
-      const suggestion = aiSuggestion;
+      // Enhanced parsing similar to AIResponseFormatter
+      const parseResponse = (text) => {
+        const lines = text.split('\n').filter(line => line.trim());
+        let structure = {
+          title: '',
+          ingredients: [],
+          instructions: [],
+          category: ''
+        };
+
+        let currentSection = '';
+        
+        lines.forEach((line, index) => {
+          const lower = line.toLowerCase().trim();
+          const clean = line.trim();
+          
+          // Detect title (usually first meaningful line or contains "recette")
+          if (!structure.title && (index < 3 || lower.includes('recette') || lower.includes('titre'))) {
+            if (clean.includes(':')) {
+              structure.title = clean.split(':')[1]?.trim() || clean.split(':')[0].trim();
+            } else if (!lower.includes('ingrédient') && !lower.includes('préparation') && !lower.includes('instruction')) {
+              structure.title = clean.replace(/^#+\s*/, '').replace(/^\*+\s*/, '').replace(/^recette\s*:?\s*/i, '');
+            }
+          }
+          
+          // Detect sections
+          if (lower.includes('ingrédient') || lower.includes('ingredients')) {
+            currentSection = 'ingredients';
+            return;
+          } else if (lower.includes('instruction') || lower.includes('préparation') || lower.includes('preparation') || lower.includes('étapes')) {
+            currentSection = 'instructions';
+            return;
+          }
+          
+          // Extract metadata
+          if (lower.includes('catégorie') || lower.includes('category')) {
+            structure.category = clean.split(':')[1]?.trim() || '';
+          }
+          
+          // Add content to current section
+          if (currentSection === 'ingredients' && clean && !lower.includes('ingrédient') && !lower.includes('instruction')) {
+            const ingredient = clean.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+            if (ingredient) {
+              structure.ingredients.push(ingredient);
+            }
+          } else if (currentSection === 'instructions' && clean && !lower.includes('instruction') && !lower.includes('préparation')) {
+            const instruction = clean.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+            if (instruction) {
+              structure.instructions.push(instruction);
+            }
+          }
+        });
+
+        return structure;
+      };
+
+      const parsed = parseResponse(aiSuggestion);
       
-      // Simple parsing - in a real app, you might want more sophisticated parsing
-      const lines = suggestion.split('\n').filter(line => line.trim());
+      // Format ingredients as bullet points
+      const formattedIngredients = parsed.ingredients.length > 0 
+        ? parsed.ingredients.map(ing => `- ${ing}`).join('\n')
+        : '';
       
-      let titre = '';
-      let ingredients = '';
-      let instructions = '';
+      // Format instructions as numbered steps
+      const formattedInstructions = parsed.instructions.length > 0
+        ? parsed.instructions.map((inst, idx) => `${idx + 1}. ${inst}`).join('\n')
+        : aiSuggestion; // Fallback to original suggestion
       
-      let currentSection = '';
+      // Update form data
+      const newFormData = {
+        ...formData,
+        titre: parsed.title || formData.titre || 'Recette suggérée par IA',
+        ingredients: formattedIngredients || formData.ingredients,
+        instructions: formattedInstructions || formData.instructions
+      };
       
-      lines.forEach(line => {
-        const lower = line.toLowerCase();
-        if (lower.includes('titre') || lower.includes('recette') || (lower.includes(':') && lines.indexOf(line) < 3)) {
-          titre = line.replace(/titre\s*:/i, '').replace(/recette\s*:/i, '').trim();
-        } else if (lower.includes('ingrédients') || lower.includes('ingredients')) {
-          currentSection = 'ingredients';
-        } else if (lower.includes('instructions') || lower.includes('préparation') || lower.includes('preparation')) {
-          currentSection = 'instructions';
-        } else if (currentSection === 'ingredients' && !lower.includes('instructions') && !lower.includes('préparation')) {
-          ingredients += line + '\n';
-        } else if (currentSection === 'instructions') {
-          instructions += line + '\n';
-        }
-      });
-      
-      // If simple parsing didn't work well, use the full suggestion as instructions
-      if (!titre && !ingredients && !instructions) {
-        instructions = suggestion;
-        titre = 'Recette suggérée par IA';
+      // Set category if detected and not already set
+      if (parsed.category && !formData.categorie) {
+        newFormData.categorie = parsed.category;
       }
       
-      setFormData({
-        ...formData,
-        titre: titre || formData.titre,
-        ingredients: ingredients.trim() || formData.ingredients,
-        instructions: instructions.trim() || formData.instructions
-      });
-      
+      setFormData(newFormData);
       setShowAISuggestion(false);
-      toast.success('Suggestion appliquée à votre recette !');
+      
+      toast.success('Recette appliquée avec succès ! 🎉', {
+        description: `${parsed.ingredients.length} ingrédients et ${parsed.instructions.length} étapes ajoutés`
+      });
     }
   };
 
