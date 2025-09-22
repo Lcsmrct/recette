@@ -91,6 +91,12 @@ class Commentaire(BaseModel):
 class SuggestionIA(BaseModel):
     ingredients: str
 
+class RecetteCompleteIA(BaseModel):
+    titre: str
+    ingredients: str
+    instructions: str
+    categorie: str
+
 # Helper functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
