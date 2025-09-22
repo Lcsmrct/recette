@@ -365,6 +365,69 @@ async def get_suggestions_ia(suggestion_data: SuggestionIA):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de suggestions: {str(e)}")
 
+@api_router.post("/ia/generer-recette")
+async def generer_recette_complete(suggestion_data: SuggestionIA):
+    """Génère une recette complète avec ingrédients et instructions séparément structurés"""
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=503, detail="Service IA non disponible")
+    
+    try:
+        # Initialize LLM Chat with Gemini 2.0 Flash
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"recette-complete-{str(uuid.uuid4())}",
+            system_message="Vous êtes un chef cuisinier expert. Générez des recettes complètes et bien structurées en français. Répondez UNIQUEMENT au format JSON demandé."
+        ).with_model("gemini", "gemini-2.0-flash")
+        
+        # Create structured message for complete recipe generation
+        user_message = UserMessage(
+            text=f"""Créez une recette complète avec ces ingrédients : {suggestion_data.ingredients}
+
+Répondez UNIQUEMENT en format JSON avec cette structure exacte :
+{{
+    "titre": "Nom de la recette",
+    "ingredients": "Liste complète des ingrédients avec quantités (séparés par des retours à la ligne)",
+    "instructions": "Instructions de préparation étape par étape (séparées par des retours à la ligne)",
+    "categorie": "Catégorie parmi: Entrée, Plat principal, Dessert, Boisson, Apéritif, Petit-déjeuner, Goûter, Sauce, Autre"
+}}
+
+Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis."""
+        )
+        
+        # Get AI response
+        response = await chat.send_message(user_message)
+        
+        # Try to parse JSON response
+        try:
+            import json
+            # Clean the response to extract JSON
+            cleaned_response = response.strip()
+            if cleaned_response.startswith('```json'):
+                cleaned_response = cleaned_response[7:]
+            if cleaned_response.endswith('```'):
+                cleaned_response = cleaned_response[:-3]
+            
+            recette_data = json.loads(cleaned_response)
+            
+            # Validate required fields
+            required_fields = ['titre', 'ingredients', 'instructions', 'categorie']
+            for field in required_fields:
+                if field not in recette_data:
+                    raise ValueError(f"Champ manquant: {field}")
+            
+            return {"recette": recette_data, "raw_response": response}
+            
+        except (json.JSONDecodeError, ValueError) as e:
+            # If JSON parsing fails, return raw response
+            return {
+                "recette": None, 
+                "raw_response": response, 
+                "error": f"Erreur de parsing JSON: {str(e)}"
+            }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de recette: {str(e)}")
+
 # Admin routes
 @api_router.get("/admin/recettes", response_model=List[Recette])
 async def get_recettes_en_attente(admin_user: User = Depends(get_admin_user)):
