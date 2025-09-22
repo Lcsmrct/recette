@@ -136,95 +136,124 @@ const AjouterRecette = () => {
     }
   };
 
-  const applyAISuggestion = () => {
-    if (aiSuggestion) {
-      // Enhanced parsing similar to AIResponseFormatter
-      const parseResponse = (text) => {
-        const lines = text.split('\n').filter(line => line.trim());
-        let structure = {
-          title: '',
-          ingredients: [],
-          instructions: [],
-          category: ''
+  const applyAISuggestion = async () => {
+    if (!aiSuggestion) return;
+
+    try {
+      if (aiMode === 'generate') {
+        // For generated recipes, call the API again to get the structured data
+        const response = await axios.post('/ia/generer-recette', {
+          ingredients: aiIngredients
+        });
+        
+        if (response.data.recette) {
+          const recette = response.data.recette;
+          
+          setFormData({
+            ...formData,
+            titre: recette.titre || formData.titre,
+            ingredients: recette.ingredients || formData.ingredients,
+            instructions: recette.instructions || formData.instructions,
+            categorie: recette.categorie || formData.categorie
+          });
+          
+          toast.success('Recette appliquée avec succès ! 🎉', {
+            description: 'Tous les champs ont été remplis automatiquement'
+          });
+        }
+      } else {
+        // Use the enhanced parsing for suggestions
+        const parseResponse = (text) => {
+          const lines = text.split('\n').filter(line => line.trim());
+          let structure = {
+            title: '',
+            ingredients: [],
+            instructions: [],
+            category: ''
+          };
+
+          let currentSection = '';
+          
+          lines.forEach((line, index) => {
+            const lower = line.toLowerCase().trim();
+            const clean = line.trim();
+            
+            // Detect title
+            if (!structure.title && (index < 3 || lower.includes('recette') || lower.includes('titre'))) {
+              if (clean.includes(':')) {
+                structure.title = clean.split(':')[1]?.trim() || clean.split(':')[0].trim();
+              } else if (!lower.includes('ingrédient') && !lower.includes('préparation') && !lower.includes('instruction')) {
+                structure.title = clean.replace(/^#+\s*/, '').replace(/^\*+\s*/, '').replace(/^recette\s*:?\s*/i, '');
+              }
+            }
+            
+            // Detect sections
+            if (lower.includes('ingrédient') || lower.includes('ingredients')) {
+              currentSection = 'ingredients';
+              return;
+            } else if (lower.includes('instruction') || lower.includes('préparation') || lower.includes('preparation') || lower.includes('étapes')) {
+              currentSection = 'instructions';
+              return;
+            }
+            
+            // Extract metadata
+            if (lower.includes('catégorie') || lower.includes('category')) {
+              structure.category = clean.split(':')[1]?.trim() || '';
+            }
+            
+            // Add content to current section
+            if (currentSection === 'ingredients' && clean && !lower.includes('ingrédient') && !lower.includes('instruction')) {
+              const ingredient = clean.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+              if (ingredient) {
+                structure.ingredients.push(ingredient);
+              }
+            } else if (currentSection === 'instructions' && clean && !lower.includes('instruction') && !lower.includes('préparation')) {
+              const instruction = clean.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim();
+              if (instruction) {
+                structure.instructions.push(instruction);
+              }
+            }
+          });
+
+          return structure;
         };
 
-        let currentSection = '';
+        const parsed = parseResponse(aiSuggestion);
         
-        lines.forEach((line, index) => {
-          const lower = line.toLowerCase().trim();
-          const clean = line.trim();
-          
-          // Detect title (usually first meaningful line or contains "recette")
-          if (!structure.title && (index < 3 || lower.includes('recette') || lower.includes('titre'))) {
-            if (clean.includes(':')) {
-              structure.title = clean.split(':')[1]?.trim() || clean.split(':')[0].trim();
-            } else if (!lower.includes('ingrédient') && !lower.includes('préparation') && !lower.includes('instruction')) {
-              structure.title = clean.replace(/^#+\s*/, '').replace(/^\*+\s*/, '').replace(/^recette\s*:?\s*/i, '');
-            }
-          }
-          
-          // Detect sections
-          if (lower.includes('ingrédient') || lower.includes('ingredients')) {
-            currentSection = 'ingredients';
-            return;
-          } else if (lower.includes('instruction') || lower.includes('préparation') || lower.includes('preparation') || lower.includes('étapes')) {
-            currentSection = 'instructions';
-            return;
-          }
-          
-          // Extract metadata
-          if (lower.includes('catégorie') || lower.includes('category')) {
-            structure.category = clean.split(':')[1]?.trim() || '';
-          }
-          
-          // Add content to current section
-          if (currentSection === 'ingredients' && clean && !lower.includes('ingrédient') && !lower.includes('instruction')) {
-            const ingredient = clean.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim();
-            if (ingredient) {
-              structure.ingredients.push(ingredient);
-            }
-          } else if (currentSection === 'instructions' && clean && !lower.includes('instruction') && !lower.includes('préparation')) {
-            const instruction = clean.replace(/^[-*•]\s*/, '').replace(/^\d+\.\s*/, '').trim();
-            if (instruction) {
-              structure.instructions.push(instruction);
-            }
-          }
+        // Format ingredients as bullet points
+        const formattedIngredients = parsed.ingredients.length > 0 
+          ? parsed.ingredients.map(ing => `- ${ing}`).join('\n')
+          : '';
+        
+        // Format instructions as numbered steps
+        const formattedInstructions = parsed.instructions.length > 0
+          ? parsed.instructions.map((inst, idx) => `${idx + 1}. ${inst}`).join('\n')
+          : aiSuggestion;
+        
+        // Update form data
+        const newFormData = {
+          ...formData,
+          titre: parsed.title || formData.titre || 'Recette suggérée par IA',
+          ingredients: formattedIngredients || formData.ingredients,
+          instructions: formattedInstructions || formData.instructions
+        };
+        
+        // Set category if detected and not already set
+        if (parsed.category && !formData.categorie) {
+          newFormData.categorie = parsed.category;
+        }
+        
+        setFormData(newFormData);
+        
+        toast.success('Recette appliquée avec succès ! 🎉', {
+          description: `${parsed.ingredients.length} ingrédients et ${parsed.instructions.length} étapes ajoutés`
         });
-
-        return structure;
-      };
-
-      const parsed = parseResponse(aiSuggestion);
-      
-      // Format ingredients as bullet points
-      const formattedIngredients = parsed.ingredients.length > 0 
-        ? parsed.ingredients.map(ing => `- ${ing}`).join('\n')
-        : '';
-      
-      // Format instructions as numbered steps
-      const formattedInstructions = parsed.instructions.length > 0
-        ? parsed.instructions.map((inst, idx) => `${idx + 1}. ${inst}`).join('\n')
-        : aiSuggestion; // Fallback to original suggestion
-      
-      // Update form data
-      const newFormData = {
-        ...formData,
-        titre: parsed.title || formData.titre || 'Recette suggérée par IA',
-        ingredients: formattedIngredients || formData.ingredients,
-        instructions: formattedInstructions || formData.instructions
-      };
-      
-      // Set category if detected and not already set
-      if (parsed.category && !formData.categorie) {
-        newFormData.categorie = parsed.category;
       }
       
-      setFormData(newFormData);
       setShowAISuggestion(false);
-      
-      toast.success('Recette appliquée avec succès ! 🎉', {
-        description: `${parsed.ingredients.length} ingrédients et ${parsed.instructions.length} étapes ajoutés`
-      });
+    } catch (error) {
+      console.error('Erreur lors de l\'application:', error);
+      toast.error('Erreur lors de l\'application de la recette');
     }
   };
 
