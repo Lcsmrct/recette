@@ -143,6 +143,14 @@ const RecipeDetailModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>{recette?.titre || 'Détails de la recette'}</DialogTitle>
+          <DialogDescription>
+            Recette de {recette?.auteur_nom} - {recette?.categorie}. 
+            Consultez les ingrédients, instructions et notez cette recette.
+          </DialogDescription>
+        </DialogHeader>
+        
         {/* Header with Image */}
         <div className="relative">
           {recette.image ? (
