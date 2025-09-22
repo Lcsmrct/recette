@@ -144,7 +144,29 @@ class AtlasEndpointTester:
             "categorie": "Dessert"
         }
         
-        success, response = self.api_call("POST", "recettes", recipe_data)
+        # Recipe endpoint expects form data, not JSON
+        url = f"{self.base_url}/recettes"
+        headers = {'Authorization': f'Bearer {self.token}'}
+        
+        try:
+            response = requests.post(url, data=recipe_data, headers=headers)
+            success = response.status_code == 200
+            
+            if success:
+                self.log(f"✅ POST recettes - Status: {response.status_code}")
+                response_data = response.json()
+                self.test_recipe_id = response_data.get('recette', {}).get('id')
+            else:
+                self.log(f"❌ POST recettes - Expected 200, got {response.status_code}", "ERROR")
+                try:
+                    error_detail = response.json()
+                    self.log(f"   Error details: {error_detail}", "ERROR")
+                except:
+                    self.log(f"   Error text: {response.text}", "ERROR")
+                return False
+        except Exception as e:
+            self.log(f"❌ POST recettes - Exception: {str(e)}", "ERROR")
+            return False
         if not success:
             return False
             
