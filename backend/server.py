@@ -477,23 +477,6 @@ Répondez en français."""
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de suggestions: {str(e)}")
 
-async def get_suggestions_ia_emergent(suggestion_data: SuggestionIA):
-    """Fallback function using Emergent LLM"""
-    try:
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"recette-{str(uuid.uuid4())}",
-            system_message="Vous êtes un chef cuisinier expert qui suggère des recettes créatives et savoureuses basées sur les ingrédients disponibles. Répondez toujours en français."
-        ).with_model("gemini", "gemini-2.0-flash")
-        
-        user_message = UserMessage(
-            text=f"Suggère-moi une recette délicieuse avec ces ingrédients : {suggestion_data.ingredients}. Donne-moi le titre, la liste des ingrédients nécessaires, et les instructions de préparation étape par étape."
-        )
-        
-        response = await chat.send_message(user_message)
-        return {"suggestion": response}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de suggestions: {str(e)}")
 
 @api_router.post("/ia/generer-recette")
 async def generer_recette_complete(suggestion_data: SuggestionIA):
