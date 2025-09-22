@@ -457,10 +457,7 @@ async def get_commentaires(recette_id: str):
 @api_router.post("/ia/suggestions")
 async def get_suggestions_ia(suggestion_data: SuggestionIA):
     if not GOOGLE_GEMINI_API_KEY:
-        # Fallback to Emergent LLM if Gemini not available
-        if not EMERGENT_LLM_KEY:
-            raise HTTPException(status_code=503, detail="Service IA non disponible")
-        return await get_suggestions_ia_emergent(suggestion_data)
+        raise HTTPException(status_code=503, detail="Service IA non disponible")
     
     try:
         # Use Google Gemini directly
@@ -478,9 +475,6 @@ Répondez en français."""
         return {"suggestion": response.text}
     
     except Exception as e:
-        # Fallback to Emergent LLM on error
-        if EMERGENT_LLM_KEY:
-            return await get_suggestions_ia_emergent(suggestion_data)
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de suggestions: {str(e)}")
 
 async def get_suggestions_ia_emergent(suggestion_data: SuggestionIA):
