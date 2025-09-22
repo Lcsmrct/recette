@@ -6,7 +6,7 @@ import base64
 import io
 
 class RecipeAPITester:
-    def __init__(self, base_url="https://recipe-manager-12.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://mongodb-connect-6.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.token = None
         self.admin_token = None
