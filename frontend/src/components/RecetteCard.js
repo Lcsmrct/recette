@@ -159,19 +159,23 @@ const RecetteCard = ({
         {/* Ingredients Preview */}
         <p className="text-sm text-gray-700 mb-4 line-clamp-2">
           <span className="font-medium">Ingrédients : </span>
-          {recette.ingredients.length > 100 
-            ? `${recette.ingredients.substring(0, 100)}...` 
-            : recette.ingredients
-          }
+          <span className="break-words">
+            {recette.ingredients.length > 100 
+              ? `${recette.ingredients.substring(0, 100)}...` 
+              : recette.ingredients
+            }
+          </span>
         </p>
 
         {/* Instructions Preview */}
         <p className="text-sm text-gray-700 mb-4 line-clamp-3">
           <span className="font-medium">Préparation : </span>
-          {recette.instructions.length > 150 
-            ? `${recette.instructions.substring(0, 150)}...` 
-            : recette.instructions
-          }
+          <span className="break-words">
+            {recette.instructions.length > 150 
+              ? `${recette.instructions.substring(0, 150)}...` 
+              : recette.instructions
+            }
+          </span>
         </p>
 
         {/* Meta Info */}
