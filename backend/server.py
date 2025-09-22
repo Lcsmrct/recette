@@ -232,6 +232,84 @@ async def login(login_data: UserLogin):
 async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request_data: PasswordResetRequest):
+    """Initiate password reset process"""
+    # Check if user exists
+    user = await db.users.find_one({"email": request_data.email})
+    if not user:
+        # Return success even if user doesn't exist (security best practice)
+        return {"message": "Si cet email existe, un lien de réinitialisation a été envoyé"}
+    
+    # Generate reset token
+    reset_token = generate_reset_token()
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)  # Token expires in 1 hour
+    
+    # Create reset token record
+    token_record = PasswordResetToken(
+        user_id=user["id"],
+        email=request_data.email,
+        token=reset_token,
+        expires_at=expires_at
+    )
+    
+    # Save token to database
+    await db.password_reset_tokens.insert_one(token_record.dict())
+    
+    # Send email (simulated for now)
+    send_password_reset_email(request_data.email, reset_token)
+    
+    return {"message": "Si cet email existe, un lien de réinitialisation a été envoyé"}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(reset_data: PasswordReset):
+    """Complete password reset with token"""
+    # Find valid token
+    token_record = await db.password_reset_tokens.find_one({
+        "token": reset_data.token,
+        "used": False,
+        "expires_at": {"$gt": datetime.now(timezone.utc)}
+    })
+    
+    if not token_record:
+        raise HTTPException(status_code=400, detail="Token invalide ou expiré")
+    
+    # Find user
+    user = await db.users.find_one({"id": token_record["user_id"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    
+    # Hash new password
+    hashed_password = hash_password(reset_data.new_password)
+    
+    # Update user password
+    await db.users.update_one(
+        {"id": token_record["user_id"]},
+        {"$set": {"password": hashed_password}}
+    )
+    
+    # Mark token as used
+    await db.password_reset_tokens.update_one(
+        {"token": reset_data.token},
+        {"$set": {"used": True}}
+    )
+    
+    return {"message": "Mot de passe mis à jour avec succès"}
+
+@api_router.get("/auth/verify-reset-token/{token}")
+async def verify_reset_token(token: str):
+    """Verify if reset token is valid"""
+    token_record = await db.password_reset_tokens.find_one({
+        "token": token,
+        "used": False,
+        "expires_at": {"$gt": datetime.now(timezone.utc)}
+    })
+    
+    if not token_record:
+        raise HTTPException(status_code=400, detail="Token invalide ou expiré")
+    
+    return {"valid": True, "email": token_record["email"]}
+
 # Recipe routes
 @api_router.post("/recettes")
 async def create_recette(
