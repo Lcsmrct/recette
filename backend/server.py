@@ -482,10 +482,7 @@ Répondez en français."""
 async def generer_recette_complete(suggestion_data: SuggestionIA):
     """Génère une recette complète avec ingrédients et instructions séparément structurés"""
     if not GOOGLE_GEMINI_API_KEY:
-        # Fallback to Emergent LLM if Gemini not available
-        if not EMERGENT_LLM_KEY:
-            raise HTTPException(status_code=503, detail="Service IA non disponible")
-        return await generer_recette_complete_emergent(suggestion_data)
+        raise HTTPException(status_code=503, detail="Service IA non disponible")
     
     try:
         # Use Google Gemini directly
@@ -534,9 +531,6 @@ Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis. Réponde
             }
     
     except Exception as e:
-        # Fallback to Emergent LLM on error
-        if EMERGENT_LLM_KEY:
-            return await generer_recette_complete_emergent(suggestion_data)
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de recette: {str(e)}")
 
 async def generer_recette_complete_emergent(suggestion_data: SuggestionIA):
