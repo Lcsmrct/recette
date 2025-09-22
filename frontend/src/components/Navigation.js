@@ -282,51 +282,6 @@ const Navigation = ({ user, onLogout }) => {
           </div>
         </div>
       )}
-
-      {/* Legacy Mobile Navigation - Keep for backwards compatibility */}
-      {user && (
-        <div className="hidden border-t border-white/20 bg-white/30">
-          <div className="px-4 py-3 space-y-2">
-            <Link 
-              to="/dashboard" 
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                isActive('/dashboard') 
-                  ? 'text-red-600 bg-red-50' 
-                  : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
-              }`}
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              <span>Tableau de bord</span>
-            </Link>
-
-            <Link 
-              to="/ajouter-recette" 
-              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                isActive('/ajouter-recette') 
-                  ? 'text-red-600 bg-red-50' 
-                  : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
-              }`}
-            >
-              <Plus className="h-4 w-4" />
-              <span>Ajouter une recette</span>
-            </Link>
-
-            {user.role === 'admin' && (
-              <Link 
-                to="/admin" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                  isActive('/admin') 
-                    ? 'text-red-600 bg-red-50' 
-                    : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
-                }`}
-              >
-                <Settings className="h-4 w-4" />
-                <span>Administration</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
     </nav>
   );
 };
