@@ -115,39 +115,55 @@ const Navigation = ({ user, onLogout }) => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2 px-3 py-2 bg-white/50 rounded-lg">
-                  <User className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-700">{user.nom}</span>
-                </div>
-                <Button
-                  onClick={onLogout}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">Déconnexion</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link to="/login">
-                  <Button variant="outline" size="sm" className="border-red-200 text-red-600 hover:bg-red-50">
-                    Connexion
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button 
-                    size="sm" 
-                    className="btn-primary bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-warm"
+            {/* Mobile menu button */}
+            <button
+              onClick={toggleMobileMenu}
+              className="md:hidden p-2 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+
+            {/* Desktop user actions */}
+            <div className="hidden md:flex items-center space-x-4">
+              {user ? (
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-white/50 rounded-lg">
+                    <User className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">{user.nom}</span>
+                  </div>
+                  <Button
+                    onClick={onLogout}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center space-x-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                   >
-                    Inscription
+                    <LogOut className="h-4 w-4" />
+                    <span className="hidden sm:inline">Déconnexion</span>
                   </Button>
-                </Link>
-              </div>
-            )}
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <Link to="/login">
+                    <Button variant="outline" size="sm" className="border-red-200 text-red-600 hover:bg-red-50">
+                      Connexion
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button 
+                      size="sm" 
+                      className="btn-primary bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-warm"
+                    >
+                      Inscription
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
