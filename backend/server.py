@@ -169,6 +169,20 @@ def process_image(image_data: bytes) -> str:
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Erreur lors du traitement de l'image: {str(e)}")
 
+def generate_reset_token() -> str:
+    """Generate a secure random token for password reset"""
+    return secrets.token_urlsafe(32)
+
+def send_password_reset_email(email: str, token: str) -> bool:
+    """
+    Simulate sending password reset email
+    In production, replace with actual email service (SendGrid, etc.)
+    """
+    # For now, just log the token (in production, send via email)
+    print(f"Password reset token for {email}: {token}")
+    print(f"Reset URL: http://localhost:3000/reset-password?token={token}")
+    return True
+
 # Authentication routes
 @api_router.post("/auth/register")
 async def register(user_data: UserCreate):
