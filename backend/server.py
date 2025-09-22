@@ -15,6 +15,7 @@ import bcrypt
 import base64
 import secrets
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+import google.generativeai as genai
 from PIL import Image
 import io
 
