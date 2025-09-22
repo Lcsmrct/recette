@@ -176,6 +176,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ VERIFIED: AI suggestions endpoint working perfectly with Google Gemini API and MongoDB Atlas backend. Tested with ingredients 'tomates, basilic, mozzarella' - received 3354 character response. No budget errors detected. Using gemini-2.0-flash-exp model successfully."
+        - working: true
+          agent: "testing"
+          comment: "✅ RE-VERIFIED: AI suggestions thoroughly tested with multiple ingredient combinations. All tests successful with response lengths 3737-4123 characters. Google Gemini API integration stable and functional after frontend improvements."
 
   - task: "AI Recipe Generation with Structured JSON"
     implemented: true
