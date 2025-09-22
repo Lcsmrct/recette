@@ -169,8 +169,123 @@ const Navigation = ({ user, onLogout }) => {
       </div>
 
       {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-white/20 bg-white/95 backdrop-blur-sm">
+          <div className="px-4 py-3 space-y-2">
+            {/* Mobile navigation links */}
+            <Link 
+              to="/" 
+              onClick={closeMobileMenu}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                isActive('/') 
+                  ? 'text-red-600 bg-red-50' 
+                  : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
+              }`}
+            >
+              <Home className="h-4 w-4" />
+              <span>Accueil</span>
+            </Link>
+
+            <Link 
+              to="/recettes" 
+              onClick={closeMobileMenu}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                isActive('/recettes') 
+                  ? 'text-red-600 bg-red-50' 
+                  : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
+              }`}
+            >
+              <Book className="h-4 w-4" />
+              <span>Recettes</span>
+            </Link>
+
+            {user ? (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  onClick={closeMobileMenu}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    isActive('/dashboard') 
+                      ? 'text-red-600 bg-red-50' 
+                      : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
+                  }`}
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span>Tableau de bord</span>
+                </Link>
+
+                <Link 
+                  to="/ajouter-recette" 
+                  onClick={closeMobileMenu}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    isActive('/ajouter-recette') 
+                      ? 'text-red-600 bg-red-50' 
+                      : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
+                  }`}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Ajouter une recette</span>
+                </Link>
+
+                {user.role === 'admin' && (
+                  <Link 
+                    to="/admin" 
+                    onClick={closeMobileMenu}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                      isActive('/admin') 
+                        ? 'text-red-600 bg-red-50' 
+                        : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
+                    }`}
+                  >
+                    <Settings className="h-4 w-4" />
+                    <span>Administration</span>
+                  </Link>
+                )}
+
+                {/* Mobile user info */}
+                <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-lg mb-2">
+                    <User className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">{user.nom}</span>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      onLogout();
+                      closeMobileMenu();
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="w-full flex items-center justify-center space-x-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Déconnexion</span>
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="border-t border-gray-200 pt-3 mt-3 space-y-2">
+                <Link to="/login" onClick={closeMobileMenu}>
+                  <Button variant="outline" size="sm" className="w-full border-red-200 text-red-600 hover:bg-red-50">
+                    Connexion
+                  </Button>
+                </Link>
+                <Link to="/register" onClick={closeMobileMenu}>
+                  <Button 
+                    size="sm" 
+                    className="w-full btn-primary bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-warm"
+                  >
+                    Inscription
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Legacy Mobile Navigation - Keep for backwards compatibility */}
       {user && (
-        <div className="md:hidden border-t border-white/20 bg-white/30">
+        <div className="hidden border-t border-white/20 bg-white/30">
           <div className="px-4 py-3 space-y-2">
             <Link 
               to="/dashboard" 
