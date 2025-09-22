@@ -167,6 +167,9 @@ class AtlasEndpointTester:
         except Exception as e:
             self.log(f"❌ POST recettes - Exception: {str(e)}", "ERROR")
             return False
+        
+        if not success:
+            return False
         if not success:
             return False
             
