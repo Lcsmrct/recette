@@ -99,13 +99,34 @@ const AjouterRecette = () => {
 
     setLoadingAI(true);
     try {
-      const response = await axios.post('/ia/suggestions', {
+      // Use the structured recipe generation endpoint
+      const response = await axios.post('/ia/generer-recette', {
         ingredients: aiIngredients
       });
       
-      setAiSuggestion(response.data.suggestion);
-      toast.success('Suggestion générée avec succès !');
+      // Check if we got structured data
+      if (response.data.recette) {
+        const recette = response.data.recette;
+        setAiSuggestion(JSON.stringify(recette, null, 2)); // Store as formatted JSON for display
+        
+        // Auto-apply the structured data
+        setFormData({
+          ...formData,
+          titre: recette.titre || formData.titre,
+          ingredients: recette.ingredients || formData.ingredients,
+          instructions: recette.instructions || formData.instructions,
+          categorie: recette.categorie || formData.categorie
+        });
+        
+        toast.success('Recette générée et appliquée avec succès ! 🎉');
+        setShowAISuggestion(false); // Close the AI section since we auto-applied
+      } else {
+        // Fallback to old method
+        setAiSuggestion(response.data.suggestion);
+        toast.success('Suggestion générée avec succès !');
+      }
     } catch (error) {
+      console.error('Erreur API:', error);
       const message = error.response?.data?.detail || 'Erreur lors de la génération de la suggestion';
       toast.error(message);
     } finally {
