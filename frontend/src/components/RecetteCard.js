@@ -8,10 +8,12 @@ import {
   Users, 
   Heart,
   MessageSquare,
-  ChefHat
+  ChefHat,
+  Eye
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import RecipeDetailModal from './RecipeDetailModal';
 
 const RecetteCard = ({ 
   recette, 
