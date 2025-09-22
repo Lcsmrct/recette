@@ -533,57 +533,7 @@ Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis. Réponde
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de recette: {str(e)}")
 
-async def generer_recette_complete_emergent(suggestion_data: SuggestionIA):
-    """Fallback function using Emergent LLM"""
-    try:
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"recette-complete-{str(uuid.uuid4())}",
-            system_message="Vous êtes un chef cuisinier expert. Générez des recettes complètes et bien structurées en français. Répondez UNIQUEMENT au format JSON demandé."
-        ).with_model("gemini", "gemini-2.0-flash")
-        
-        user_message = UserMessage(
-            text=f"""Créez une recette complète avec ces ingrédients : {suggestion_data.ingredients}
 
-Répondez UNIQUEMENT en format JSON avec cette structure exacte :
-{{
-    "titre": "Nom de la recette",
-    "ingredients": "Liste complète des ingrédients avec quantités (séparés par des retours à la ligne)",
-    "instructions": "Instructions de préparation étape par étape (séparées par des retours à la ligne)",
-    "categorie": "Catégorie parmi: Entrée, Plat principal, Dessert, Boisson, Apéritif, Petit-déjeuner, Goûter, Sauce, Autre"
-}}
-
-Incluez TOUS les ingrédients nécessaires, pas seulement ceux fournis."""
-        )
-        
-        response = await chat.send_message(user_message)
-        
-        # Try to parse JSON response
-        try:
-            import json
-            cleaned_response = response.strip()
-            if cleaned_response.startswith('```json'):
-                cleaned_response = cleaned_response[7:]
-            if cleaned_response.endswith('```'):
-                cleaned_response = cleaned_response[:-3]
-            
-            recette_data = json.loads(cleaned_response)
-            
-            required_fields = ['titre', 'ingredients', 'instructions', 'categorie']
-            for field in required_fields:
-                if field not in recette_data:
-                    raise ValueError(f"Champ manquant: {field}")
-            
-            return {"recette": recette_data, "raw_response": response}
-            
-        except (json.JSONDecodeError, ValueError) as e:
-            return {
-                "recette": None, 
-                "raw_response": response, 
-                "error": f"Erreur de parsing JSON: {str(e)}"
-            }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de recette: {str(e)}")
 
 # Admin routes
 @api_router.get("/admin/recettes", response_model=List[Recette])
