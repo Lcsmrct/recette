@@ -339,12 +339,12 @@ async def get_suggestions_ia(suggestion_data: SuggestionIA):
         raise HTTPException(status_code=503, detail="Service IA non disponible")
     
     try:
-        # Initialize LLM Chat
+        # Initialize LLM Chat with Gemini 2.0 Flash (meilleur modèle gratuit)
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"recette-{str(uuid.uuid4())}",
             system_message="Vous êtes un chef cuisinier expert qui suggère des recettes créatives et savoureuses basées sur les ingrédients disponibles. Répondez toujours en français."
-        ).with_model("openai", "gpt-4o-mini")
+        ).with_model("gemini", "gemini-2.0-flash")
         
         # Create message
         user_message = UserMessage(
