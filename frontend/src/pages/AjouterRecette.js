@@ -429,9 +429,10 @@ const AjouterRecette = () => {
                 <Label htmlFor="ingredients" className="text-sm font-medium text-gray-700">
                   Ingrédients *
                 </Label>
-                <Textarea
+                <SmartTextArea
                   id="ingredients"
                   name="ingredients"
+                  type="ingredients"
                   value={formData.ingredients}
                   onChange={handleChange}
                   className="min-h-32 border-gray-200 focus:border-red-500 focus:ring-red-500"
@@ -446,9 +447,10 @@ const AjouterRecette = () => {
                 <Label htmlFor="instructions" className="text-sm font-medium text-gray-700">
                   Instructions de préparation *
                 </Label>
-                <Textarea
+                <SmartTextArea
                   id="instructions"
                   name="instructions"
+                  type="instructions"
                   value={formData.instructions}
                   onChange={handleChange}
                   className="min-h-40 border-gray-200 focus:border-red-500 focus:ring-red-500"
