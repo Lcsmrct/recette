@@ -179,7 +179,7 @@ const RecetteCard = ({
         </p>
 
         {/* Meta Info */}
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 mb-4 space-y-2 sm:space-y-0">
           <div className="flex items-center space-x-4">
             {recette.nb_votes > 0 && (
               <span className="flex items-center space-x-1">
