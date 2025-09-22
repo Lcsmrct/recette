@@ -36,10 +36,7 @@ api_router = APIRouter(prefix="/api")
 JWT_SECRET = os.environ.get('JWT_SECRET', 'secret_key_super_securise_pour_jwt_token_recettes_2025')
 security = HTTPBearer()
 
-# Emergent LLM Configuration (fallback)
-EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
-
-# Google Gemini Configuration (primary)
+# Google Gemini Configuration
 GOOGLE_GEMINI_API_KEY = os.environ.get('GOOGLE_GEMINI_API_KEY')
 if GOOGLE_GEMINI_API_KEY:
     genai.configure(api_key=GOOGLE_GEMINI_API_KEY)
