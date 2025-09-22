@@ -309,50 +309,146 @@ class RecipeAPITester:
             return True
         return False
 
-    def test_password_reset_flow(self):
-        """Test complete password reset flow"""
-        # First, create a user for testing
-        timestamp = datetime.now().strftime('%H%M%S')
-        test_email = f"resetuser{timestamp}@test.com"
-        test_password = "OriginalPass123!"
+    def test_complete_password_reset_flow(self):
+        """Test complete password reset flow with database token extraction"""
+        import pymongo
+        from datetime import datetime, timezone
         
-        user_data = {
-            "nom": f"Reset Test User {timestamp}",
-            "email": test_email,
-            "password": test_password
-        }
-        
-        # Register user
-        success, response = self.run_test(
-            "Register User for Reset Test",
-            "POST",
-            "auth/register",
-            200,
-            data=user_data
-        )
-        
-        if not success:
+        # Connect to MongoDB to extract the reset token
+        try:
+            mongo_client = pymongo.MongoClient("mongodb://localhost:27017")
+            db = mongo_client["recettes_db"]
+            
+            # First, create a user for testing
+            timestamp = datetime.now().strftime('%H%M%S')
+            test_email = f"resetflow{timestamp}@test.com"
+            original_password = "OriginalPass123!"
+            new_password = "NewPassword456!"
+            
+            user_data = {
+                "nom": f"Reset Flow Test User {timestamp}",
+                "email": test_email,
+                "password": original_password
+            }
+            
+            # Register user
+            success, response = self.run_test(
+                "Register User for Complete Reset Test",
+                "POST",
+                "auth/register",
+                200,
+                data=user_data
+            )
+            
+            if not success:
+                return False
+            
+            # Request password reset
+            reset_request = {"email": test_email}
+            success, response = self.run_test(
+                "Request Password Reset for Complete Test",
+                "POST",
+                "auth/forgot-password",
+                200,
+                data=reset_request
+            )
+            
+            if not success:
+                return False
+            
+            # Extract the token from database
+            token_record = db.password_reset_tokens.find_one(
+                {"email": test_email, "used": False},
+                sort=[("created_at", -1)]
+            )
+            
+            if not token_record:
+                print("   ❌ No reset token found in database")
+                return False
+            
+            reset_token = token_record["token"]
+            print(f"   ✅ Reset token extracted: {reset_token[:10]}...")
+            
+            # Test token verification
+            success, response = self.run_test(
+                "Verify Valid Reset Token",
+                "GET",
+                f"auth/verify-reset-token/{reset_token}",
+                200
+            )
+            
+            if not success:
+                return False
+            
+            if response.get("valid") and response.get("email") == test_email:
+                print(f"   ✅ Token verified for email: {response['email']}")
+            else:
+                print(f"   ❌ Token verification failed: {response}")
+                return False
+            
+            # Reset password with valid token
+            reset_data = {
+                "token": reset_token,
+                "new_password": new_password
+            }
+            
+            success, response = self.run_test(
+                "Reset Password with Valid Token",
+                "POST",
+                "auth/reset-password",
+                200,
+                data=reset_data
+            )
+            
+            if not success:
+                return False
+            
+            # Test login with new password
+            login_data = {
+                "email": test_email,
+                "password": new_password
+            }
+            
+            success, response = self.run_test(
+                "Login with New Password",
+                "POST",
+                "auth/login",
+                200,
+                data=login_data
+            )
+            
+            if not success:
+                return False
+            
+            # Test that old password no longer works
+            old_login_data = {
+                "email": test_email,
+                "password": original_password
+            }
+            
+            success, response = self.run_test(
+                "Login with Old Password (Should Fail)",
+                "POST",
+                "auth/login",
+                400,  # Should fail
+                data=old_login_data
+            )
+            
+            if success:
+                print("   ✅ Old password correctly rejected")
+                return True
+            else:
+                print("   ❌ Old password still works (security issue)")
+                return False
+                
+        except Exception as e:
+            print(f"   ❌ Database connection error: {str(e)}")
             return False
-        
-        # Request password reset
-        reset_request = {"email": test_email}
-        success, response = self.run_test(
-            "Request Password Reset",
-            "POST",
-            "auth/forgot-password",
-            200,
-            data=reset_request
-        )
-        
-        if not success:
-            return False
-        
-        # Since we can't access the actual token from email, we'll test with a mock scenario
-        # In a real test, you'd extract the token from the email or database
-        print("   ⚠️ Cannot test token verification without access to generated token")
-        print("   ⚠️ In production, token would be extracted from email or database")
-        
-        return True
+        finally:
+            try:
+                mongo_client.close()
+            except:
+                pass
 
     def test_verify_invalid_reset_token(self):
         """Test verifying an invalid reset token"""
