@@ -333,7 +333,7 @@ const AjouterRecette = () => {
         {/* Main Form */}
         <Card className="glass border-white/20 shadow-2xl">
           <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
               {/* Title */}
               <div className="space-y-2">
                 <Label htmlFor="titre" className="text-sm font-medium text-gray-700">
@@ -381,19 +381,19 @@ const AjouterRecette = () => {
                 {!imagePreview ? (
                   <div
                     {...getRootProps()}
-                    className={`border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer transition-all hover:border-red-400 hover:bg-red-50 ${
+                    className={`border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center cursor-pointer transition-all hover:border-red-400 hover:bg-red-50 ${
                       isDragActive ? 'border-red-400 bg-red-50' : ''
                     }`}
                   >
                     <input {...getInputProps()} />
-                    <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">
+                    <Camera className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-2 text-sm sm:text-base">
                       {isDragActive 
                         ? 'Déposez votre image ici...'
                         : 'Glissez-déposez une image, ou cliquez pour sélectionner'
                       }
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs sm:text-sm text-gray-500">
                       PNG, JPG, WEBP jusqu'à 5MB
                     </p>
                   </div>
@@ -402,12 +402,12 @@ const AjouterRecette = () => {
                     <img
                       src={imagePreview}
                       alt="Aperçu"
-                      className="w-full h-64 object-cover rounded-lg"
+                      className="w-full h-48 sm:h-64 object-cover rounded-lg"
                     />
                     <button
                       type="button"
                       onClick={removeImage}
-                      className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors touch-target"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -450,20 +450,20 @@ const AjouterRecette = () => {
               </div>
 
               {/* Submit Button */}
-              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200 form-buttons">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate('/dashboard')}
                   disabled={loading}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50 order-2 sm:order-1"
                 >
                   Annuler
                 </Button>
                 
                 <Button
                   type="submit"
-                  className="btn-primary bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-8 shadow-warm"
+                  className="btn-primary bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-8 shadow-warm order-1 sm:order-2"
                   disabled={loading}
                 >
                   {loading ? (
