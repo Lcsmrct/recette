@@ -250,8 +250,8 @@ const RecetteCard = ({
 
       {/* Actions */}
       {showActions && (
-        <CardFooter className="px-6 py-4 bg-gray-50/50 border-t border-gray-100">
-          <div className="flex items-center justify-between w-full">
+        <CardFooter className="px-4 sm:px-6 py-4 bg-gray-50/50 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-2">
               {/* Average Rating Display */}
               <div className="flex items-center space-x-1">
@@ -273,7 +273,7 @@ const RecetteCard = ({
                 disabled={!currentUser}
               >
                 <MessageSquare className="h-4 w-4" />
-                <span>Commenter</span>
+                <span className="hidden sm:inline">Commenter</span>
               </Button>
             </div>
           </div>
