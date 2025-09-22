@@ -27,6 +27,7 @@ const RecetteCard = ({
   const [comment, setComment] = useState('');
   const [submittingRating, setSubmittingRating] = useState(false);
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const getCategoryColor = (categorie) => {
     const categories = {
