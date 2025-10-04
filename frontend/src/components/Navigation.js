@@ -252,6 +252,12 @@ const Navigation = ({ user, onLogout }) => {
                     <User className="h-4 w-4 text-gray-600" />
                     <span className="text-sm font-medium text-gray-700">{user.nom}</span>
                   </div>
+                  
+                  {/* PWA Install Button for Mobile */}
+                  <div className="mb-2">
+                    <PWAInstallButton />
+                  </div>
+                  
                   <Button
                     onClick={() => {
                       onLogout();
