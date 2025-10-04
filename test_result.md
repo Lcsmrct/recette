@@ -246,12 +246,14 @@ metadata:
 
 test_plan:
   current_focus:
+    - "PWA Resources (Manifest, Service Worker, Icons)"
     - "MongoDB Atlas Connection"
     - "User Authentication (Register/Login)"
-    - "Password Reset Flow"
     - "Recipe Management System"
+    - "AI Suggestions with Google Gemini Direct API"
+    - "Admin Management System"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
