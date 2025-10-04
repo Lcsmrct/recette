@@ -606,6 +606,134 @@ class RecipeAPITester:
             return True
         return False
 
+    def test_pwa_manifest(self):
+        """Test PWA manifest.json accessibility"""
+        # Test manifest.json directly from the frontend URL
+        frontend_url = "https://phone-access-2.preview.emergentagent.com"
+        url = f"{frontend_url}/manifest.json"
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing PWA Manifest...")
+        print(f"   URL: {url}")
+        
+        try:
+            response = requests.get(url)
+            success = response.status_code == 200
+            
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                try:
+                    manifest_data = response.json()
+                    print(f"   App Name: {manifest_data.get('name', 'N/A')}")
+                    print(f"   Short Name: {manifest_data.get('short_name', 'N/A')}")
+                    print(f"   Icons: {len(manifest_data.get('icons', []))} found")
+                    return True
+                except:
+                    print(f"   ⚠️ Manifest accessible but not valid JSON")
+                    return True
+            else:
+                print(f"❌ Failed - Expected 200, got {response.status_code}")
+                return False
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False
+
+    def test_pwa_service_worker(self):
+        """Test PWA service worker accessibility"""
+        frontend_url = "https://phone-access-2.preview.emergentagent.com"
+        url = f"{frontend_url}/sw.js"
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing PWA Service Worker...")
+        print(f"   URL: {url}")
+        
+        try:
+            response = requests.get(url)
+            success = response.status_code == 200
+            
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: {response.status_code}")
+                print(f"   Service Worker size: {len(response.text)} characters")
+                return True
+            else:
+                print(f"❌ Failed - Expected 200, got {response.status_code}")
+                return False
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            return False
+
+    def test_pwa_icons(self):
+        """Test PWA icons accessibility"""
+        frontend_url = "https://phone-access-2.preview.emergentagent.com"
+        icon_sizes = ["192x192", "512x512"]
+        
+        all_success = True
+        for size in icon_sizes:
+            url = f"{frontend_url}/icons/icon-{size}.png"
+            
+            self.tests_run += 1
+            print(f"\n🔍 Testing PWA Icon {size}...")
+            print(f"   URL: {url}")
+            
+            try:
+                response = requests.get(url)
+                success = response.status_code == 200
+                
+                if success:
+                    self.tests_passed += 1
+                    print(f"✅ Passed - Status: {response.status_code}")
+                    print(f"   Icon size: {len(response.content)} bytes")
+                else:
+                    print(f"❌ Failed - Expected 200, got {response.status_code}")
+                    all_success = False
+            except Exception as e:
+                print(f"❌ Failed - Error: {str(e)}")
+                all_success = False
+        
+        return all_success
+
+    def test_mongodb_connection(self):
+        """Test MongoDB Atlas connection directly"""
+        import pymongo
+        import os
+        from dotenv import load_dotenv
+        
+        # Load environment variables
+        load_dotenv('backend/.env')
+        mongo_url = os.environ['MONGO_URL']
+        db_name = os.environ['DB_NAME']
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing MongoDB Atlas Connection...")
+        print(f"   Database: {db_name}")
+        
+        try:
+            # Connect to MongoDB Atlas
+            mongo_client = pymongo.MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
+            
+            # Test connection
+            mongo_client.admin.command('ping')
+            
+            # Get database
+            db = mongo_client[db_name]
+            
+            # List collections
+            collections = db.list_collection_names()
+            
+            self.tests_passed += 1
+            print(f"✅ Passed - MongoDB Atlas connection successful")
+            print(f"   Collections found: {len(collections)}")
+            print(f"   Collections: {', '.join(collections[:5])}{'...' if len(collections) > 5 else ''}")
+            
+            mongo_client.close()
+            return True
+            
+        except Exception as e:
+            print(f"❌ Failed - MongoDB connection error: {str(e)}")
+            return False
+
 def main():
     print("🧪 Starting Recipe Management API Tests")
     print("=" * 50)
