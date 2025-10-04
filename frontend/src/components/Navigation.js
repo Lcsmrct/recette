@@ -274,6 +274,11 @@ const Navigation = ({ user, onLogout }) => {
               </>
             ) : (
               <div className="border-t border-gray-200 pt-3 mt-3 space-y-2">
+                {/* PWA Install Button for Mobile - Guest */}
+                <div className="mb-2">
+                  <PWAInstallButton />
+                </div>
+                
                 <Link to="/login" onClick={closeMobileMenu}>
                   <Button variant="outline" size="sm" className="w-full border-red-200 text-red-600 hover:bg-red-50">
                     Connexion
