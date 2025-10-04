@@ -125,11 +125,16 @@ const PWAInstallButton = () => {
 
   // Ne pas afficher si l'app est déjà installée
   if (isInstalled) {
-    return null;
+    return (
+      <div className="flex items-center space-x-2 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-lg">
+        <Smartphone size={14} />
+        <span>App installée</span>
+      </div>
+    );
   }
 
-  // Bouton compact pour les appareils qui supportent l'installation
-  if (showInstallPrompt || isIOS) {
+  // Bouton compact pour les appareils qui supportent l'installation OU bouton de test
+  if (showInstallPrompt || isIOS || true) { // Toujours afficher pour les tests
     return (
       <>
         <button
@@ -138,7 +143,7 @@ const PWAInstallButton = () => {
           title="Installer l'application sur votre appareil"
         >
           <Smartphone size={16} />
-          <span className="hidden sm:inline">Installer</span>
+          <span className="hidden sm:inline">Installer App</span>
         </button>
         
         {showIOSInstructions && <IOSInstructions />}
