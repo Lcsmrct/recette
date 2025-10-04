@@ -221,6 +221,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ VERIFIED: AI recipe generation endpoint working perfectly with MongoDB Atlas. Tested with 'tomates, basilic, mozzarella' - generated structured JSON with all required fields (titre, ingredients, instructions, categorie). Generated 'Salade Caprese revisitée aux saveurs estivales' in 'Dessert' category. JSON parsing successful, all validation passed."
+        - working: true
+          agent: "testing"
+          comment: "✅ RE-VERIFIED POST-PWA: AI recipe generation system fully functional after PWA implementation. Tested with 'pommes, farine, beurre' - generated complete structured recipe 'Tarte Tatin aux Pommes' in 'Dessert' category. All required fields present, JSON parsing successful. No regression from PWA additions."
 
 frontend:
   - task: "Frontend Integration"
