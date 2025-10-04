@@ -206,6 +206,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ RE-VERIFIED: AI suggestions thoroughly tested with multiple ingredient combinations. All tests successful with response lengths 3737-4123 characters. Google Gemini API integration stable and functional after frontend improvements."
+        - working: true
+          agent: "testing"
+          comment: "✅ RE-VERIFIED POST-PWA: AI suggestions system fully operational after PWA implementation. Tested with 'pommes, farine, beurre' - received 3486 character response from Google Gemini 2.0 Flash. API integration stable, no regression from PWA additions."
 
   - task: "AI Recipe Generation with Structured JSON"
     implemented: true
