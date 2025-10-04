@@ -116,6 +116,21 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ VERIFIED: MongoDB Atlas connection working perfectly. Successfully connected to mongodb+srv://lucasmaricourt96:jYRX9raWC3NDwqB9@cluster0.cx8z7bi.mongodb.net with database 'Cluster0'. All CRUD operations (Create, Read, Update, Delete) tested and functional. Found 11 collections in database with existing application data."
+        - working: true
+          agent: "testing"
+          comment: "✅ RE-VERIFIED POST-PWA: MongoDB Atlas connection remains stable after PWA implementation. Database 'Cluster0' operational with 6 collections (commentaires, password_reset_tokens, users, votes, recettes). All database operations functional with no regression from PWA additions."
+
+  - task: "PWA Resources (Manifest, Service Worker, Icons)"
+    implemented: true
+    working: true
+    file: "frontend/public/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ VERIFIED: All PWA resources properly served and accessible. Manifest.json contains complete app metadata (LwebMaker - Recettes, 8 icons). Service worker (sw.js) accessible with 7015 characters. All PWA icons (192x192, 512x512) properly served. PWA implementation successful."
 
   - task: "User Authentication (Register/Login)"
     implemented: true
