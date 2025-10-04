@@ -116,6 +116,9 @@ const Navigation = ({ user, onLogout }) => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
+            {/* PWA Install Button */}
+            <PWAInstallButton />
+            
             {/* Mobile menu button */}
             <button
               onClick={toggleMobileMenu}
