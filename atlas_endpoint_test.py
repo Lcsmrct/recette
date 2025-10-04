@@ -12,7 +12,7 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 
 class AtlasEndpointTester:
-    def __init__(self, base_url="https://intuitive-recipes.preview.emergentagent.com/api"):
+    def __init__(self, base_url="https://phone-access-2.preview.emergentagent.com/api"):
         self.base_url = base_url
         self.mongo_url = "mongodb+srv://lucasmaricourt96:jYRX9raWC3NDwqB9@cluster0.cx8z7bi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
         self.db_name = "Cluster0"
