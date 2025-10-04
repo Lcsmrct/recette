@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Teste la connexion à la base de données MongoDB Atlas qui vient d'être configurée avec cette URL de connexion : mongodb+srv://lucasmaricourt96:jYRX9raWC3NDwqB9@cluster0.cx8z7bi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0. Base de données : Cluster0. Vérifie que : 1. La connexion MongoDB fonctionne correctement 2. Les endpoints principaux de l'API fonctionnent 3. Teste particulièrement les endpoints d'authentification et de recettes 4. Vérifie que les données peuvent être lues et écrites dans la nouvelle base"
+user_problem_statement: "Je viens d'ajouter les fonctionnalités PWA (Progressive Web App) à notre application de recettes. Je dois vérifier que toutes les fonctionnalités backend continuent de fonctionner correctement et que les nouvelles ressources PWA sont bien servies. Tests à effectuer : 1. Vérification des endpoints API principaux (authentification, recettes CRUD, suggestions AI, administration) 2. Test des nouvelles ressources PWA (manifest.json, sw.js, icônes) 3. Fonctionnalités critiques (MongoDB Atlas, API avec bons codes de réponse, pas de régression après PWA)"
 
 backend:
   - task: "MongoDB Atlas Connection"
