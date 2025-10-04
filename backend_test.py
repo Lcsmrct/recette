@@ -740,8 +740,15 @@ def main():
     
     tester = RecipeAPITester()
     
-    # Test sequence
+    # Test sequence - PWA tests first, then critical backend functionality
     tests = [
+        # PWA Resource Tests
+        ("MongoDB Atlas Connection", tester.test_mongodb_connection),
+        ("PWA Manifest", tester.test_pwa_manifest),
+        ("PWA Service Worker", tester.test_pwa_service_worker),
+        ("PWA Icons", tester.test_pwa_icons),
+        
+        # Critical Backend API Tests
         ("User Registration", tester.test_register_user),
         ("Get Current User", tester.test_get_me),
         ("Get Categories", tester.test_get_categories),
